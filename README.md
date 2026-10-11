@@ -13,3 +13,5 @@ n8n Cloud for workflow automation
 Google Gemini for AI-generated responses and embeddings
 Simple Vector Store for document retrieval
 PDF documents as the knowledge source
+
+MAS n8n -  built a chat assistant that uses two AI agents working together. The first agent, the Coordinator, chats with you. When a question needs research, it passes the question to the second agent, the Researcher. The Researcher searches the web and sends back a short summary, and the Coordinator uses that to answer you.
