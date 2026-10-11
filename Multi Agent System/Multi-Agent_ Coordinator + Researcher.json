@@ -1,0 +1,223 @@
+{
+  "name": "Multi-Agent: Coordinator + Researcher",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "streaming"
+        }
+      },
+      "id": "a13388a5-e727-49dc-a1cc-9a989212ce54",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        208
+      ],
+      "webhookId": "203edb2e-d2f6-465f-82c0-6d9fccbe541e"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are the Coordinator, a helpful chat assistant that leads a small team of agents. Handle greetings, simple questions, rewriting and planning yourself. Whenever the user needs facts looked up, current information, in-depth investigation or source comparison, delegate to the research_agent tool with a clear, self-contained question (split big requests into several focused questions if useful). Then combine the findings into one clear answer for the user and keep the source links the researcher returns."
+        }
+      },
+      "id": "968deb95-ef1b-4051-8a3a-2b95b23211c6",
+      "name": "Coordinator Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        288,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-5",
+          "cachedResultName": "Claude Sonnet 5"
+        },
+        "options": {}
+      },
+      "id": "e7236575-7669-41ba-a14b-e65e0340db2d",
+      "name": "Coordinator Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        224,
+        432
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": null,
+          "name": "Gateway credits",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "id": "019cdf9b-ef66-46c4-9114-b14f1a985411",
+      "name": "Conversation Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Researcher sub-agent. Send it a clear, self-contained research question. It searches the web and returns a concise answer with key findings and source links.",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('research_question', 'A clear, self-contained research question including any needed context from the conversation') }}",
+        "options": {
+          "systemMessage": "You are a Researcher sub-agent working for a coordinator. Use the web_search tool (run several searches if needed) to answer the research question you receive. Reply with: 1) a short direct answer, 2) key findings as bullet points with inline source links, 3) caveats or uncertainties, 4) a numbered source list. Do not ask follow-up questions; if the question is vague, state your interpretation and proceed. Keep it under about 500 words.",
+          "maxIterations": 10
+        }
+      },
+      "id": "44bb9f62-3efc-44b2-ab7f-af68301f61d1",
+      "name": "research_agent",
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        480,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-5",
+          "cachedResultName": "Claude Sonnet 5"
+        },
+        "options": {}
+      },
+      "id": "0ef2746a-8b95-47ff-bd17-9e3c9e495e5f",
+      "name": "Researcher Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        480,
+        640
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": null,
+          "name": "Gateway credits",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Search the web. Input a concise search query; returns result titles, URLs and snippets.",
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query', 'Concise web search query (max 400 characters)') }}",
+        "additionalParameters": {}
+      },
+      "id": "964370ac-3d76-4570-a39e-5e01aabe70b0",
+      "name": "web_search",
+      "type": "@brave/n8n-nodes-brave-search.braveSearchTool",
+      "typeVersion": 1.1,
+      "position": [
+        544,
+        832
+      ],
+      "credentials": {
+        "braveSearchApi": {
+          "id": null,
+          "name": "Gateway credits",
+          "__aiGatewayManaged": true
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Coordinator Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Coordinator Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Coordinator Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversation Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Coordinator Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "research_agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Coordinator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Researcher Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "research_agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "web_search": {
+      "ai_tool": [
+        [
+          {
+            "node": "research_agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d598d96d-c622-49d4-b484-3acd3602f9d8",
+  "meta": {
+    "instanceId": "1f578d0fdd61597727d48481a1f668d0d4d810e7c34769fdc68ecd5af7e3d382"
+  },
+  "nodeGroups": [],
+  "id": "MHOrUvKvij918r96",
+  "tags": []
+}
