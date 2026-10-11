@@ -1,0 +1,1 @@
+Zapier - This project automates scheduled domain-related email notifications using Zapier, Google Sheets, and Gmail. It sends emails based on the information given, updates the status in the spreadsheet, and maintains records of sent emails for verification. This reduces manual effort and improves the efficiency of domain management.
