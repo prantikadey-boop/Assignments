@@ -19,3 +19,5 @@ https://agenticprantika.app.n8n.cloud/workflow/djuhpHxZRJqT8iQI
 
 MAS n8n -  built a chat assistant that uses two AI agents working together. The first agent, the Coordinator, chats with you. When a question needs research, it passes the question to the second agent, the Researcher. The Researcher searches the web and sends back a short summary, and the Coordinator uses that to answer you.
 https://agenticprantika.app.n8n.cloud/workflow/MHOrUvKvij918r96
+
+Langflow - A simple agent was created with Groq LLM that works as a chatbot
